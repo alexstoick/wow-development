@@ -1,0 +1,3 @@
+ItemID,ItemName,InBlizzardAPI,InWowheadAPI,isAuctionable,GlobalMedianEU,alchemy,archaeology,blacksmithing,cooking,disenchanting,enchanting,engineering,firstaid,herbalism,inscription,jewelcrafting,leatherworking,milling,mining,prospecting,skinning,tailoring,stackable,buyPrice,sellPrice,itemClass,itemSubClass,itemType,inventoryType,equippable,source,sourceId,sourceType,sourceDesc,deprecatedMsg,
+17,Martin Fury,1,1,,,,,,,,,,,,,,,,,,,,1,3,7,Armor,Plate,Shirt,Shirt,1,,,,,,
+117,Tough Jerky,1,1,1,3400,,,,,,,,,,,,,,,,,,20,25,1,Consumable,Food & Drink,Restores HP,None,,2;5;16;19;21,982,VENDOR,Vendor Bought (25c),,
