@@ -5,10 +5,10 @@ WORKDIR /go/src/github.com/alexstoick/wow/
 Add . /go/src/github.com/alexstoick/wow/
 
 # Get godeps from main repo
-RUN go get github.com/tools/godep
+# RUN go get github.com/tools/godep
 
 # Restore godep dependencies
-RUN godep restore
+# RUN godep restore
 
 # Install
 RUN go install github.com/alexstoick/wow/
