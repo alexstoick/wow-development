@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alexstoick/wow/Godeps/_workspace/src/github.com/jinzhu/gorm"
-	"github.com/alexstoick/wow/Godeps/_workspace/src/github.com/pquerna/ffjson/ffjson"
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
+	"github.com/jinzhu/gorm"
+	"github.com/pquerna/ffjson/ffjson"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -60,7 +60,6 @@ func ProcessAuctions(ah_file models.AHFile) {
 	}
 
 	db := database.ConnectToDb()
-	tx := db.Begin()
 	fmt.Printf("AUCTIONS LENGTH %d\n", len(jsonfile.Auctions))
 
 	t0 := time.Now()
@@ -74,7 +73,6 @@ func ProcessAuctions(ah_file models.AHFile) {
 		fmt.Printf("The call to INSERT (%d) AUCTIOS took %v to run.\n", i, t3.Sub(t2))
 	}
 
-	tx.Commit()
 	t1 := time.Now()
 	fmt.Printf("The call to SAVE AUCTIONS took %v to run.\n", t1.Sub(t0))
 }
@@ -103,11 +101,11 @@ func GetLatestAHFilelist() models.AHFile {
 
 func main() {
 
-	db := database.ConnectToDb()
-	//	database.AutoMigrateModels(db)
+	// db := database.ConnectToDb()
+	//database.AutoMigrateModels(db)
 
-	//ah_file := GetLatestAHFilelist()
-	var ah_file models.AHFile
-	db.Last(&ah_file)
+	ah_file := GetLatestAHFilelist()
+	//var ah_file models.AHFile
+	//db.Last(&ah_file)
 	ProcessAuctions(ah_file)
 }
