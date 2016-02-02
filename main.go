@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
@@ -17,43 +18,66 @@ func handleError(err error) {
 	}
 }
 
-func SaveAuction(auction models.Auction) {
-	db := database.ConnectToDb()
+func SaveAuction(auction models.Auction, i int, db gorm.DB) {
+	//err := db.Create(&auction)
+	//if err != nil {
+	//	panic(err)
+	//}
+
 	db.Create(&auction)
+}
+func DownloadAHFile(url string) ([]byte, string) {
+	t0 := time.Now()
+	fmt.Println(url)
+	resp, err := http.Get(url)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+	body, err1 := ioutil.ReadAll(resp.Body)
+	if err1 != nil {
+		panic(err1)
+	}
+	t1 := time.Now()
+	fmt.Printf("The call to DOWNLOAD AH FILE took %v to run.\n", t1.Sub(t0))
+	return body, string(body)
 }
 
 func ProcessAuctions(ah_file models.AHFile) {
 
-	t0 := time.Now()
-	resp, _ := http.Get(ah_file.URL)
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-	t1 := time.Now()
-	fmt.Printf("The call to DOWNLOAD AH FILE took %v to run.\n", t1.Sub(t0))
-	fmt.Printf("ah_file ID %d\n", ah_file.ID)
-
+	body, _ := DownloadAHFile(ah_file.URL)
 	type JSONFile struct {
 		Realms   []models.Realm
 		Auctions []models.Auction
 	}
 
-	var jsonfile JSONFile
-	t0 = time.Now()
-	ffjson.Unmarshal(body, &jsonfile)
+	jsonfile := JSONFile{}
+	err := json.Unmarshal(body, &jsonfile)
+	if err != nil {
+		panic(err)
+	}
 
-	//concurrency := 10
-	//sem := make(chan bool, concurrency)
+	db := database.ConnectToDb()
+	tx := db.Begin()
+	fmt.Printf("AUCTIONS LENGTH %d\n", len(jsonfile.Auctions))
 
-	for i := 0; i < 2; i++ { //i < len(jsonfile.Auctions); i++ { //
+	t0 := time.Now()
+	for i := 0; i < len(jsonfile.Auctions); i++ { //i < 5; i++ { //
 		auction := jsonfile.Auctions[i]
 		auction.ImportedFromId = ah_file.ID
-		SaveAuction(auction)
+		auction.ImportedAt = time.Now()
+		t2 := time.Now()
+		SaveAuction(auction, i, db)
+		t3 := time.Now()
+		fmt.Printf("The call to INSERT (%d) AUCTIOS took %v to run.\n", i, t3.Sub(t2))
 	}
-	t1 = time.Now()
+
+	tx.Commit()
+	t1 := time.Now()
 	fmt.Printf("The call to SAVE AUCTIONS took %v to run.\n", t1.Sub(t0))
 }
-
-var db gorm.DB
 
 func GetLatestAHFilelist() models.AHFile {
 
@@ -72,6 +96,7 @@ func GetLatestAHFilelist() models.AHFile {
 	fmt.Printf("%+v\n", file)
 	fmt.Printf("%+v\n", file.Files[0].URL)
 	ahfile := file.Files[0]
+	db := database.ConnectToDb()
 	db.Create(&ahfile)
 	return ahfile
 }
@@ -79,7 +104,7 @@ func GetLatestAHFilelist() models.AHFile {
 func main() {
 
 	db := database.ConnectToDb()
-	database.AutoMigrateModels(db)
+	//	database.AutoMigrateModels(db)
 
 	//ah_file := GetLatestAHFilelist()
 	var ah_file models.AHFile

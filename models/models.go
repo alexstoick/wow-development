@@ -7,8 +7,8 @@ type Realm struct {
 	Slug string
 }
 type Auction struct {
-	ID             int `gorm:"primary_key"`
-	AuctionID      int `json:"auc" sql:"type:bigint"`
+	//ID             int `gorm:"primary_key"`
+	AuctionID      int `json:"auc" sql:"type:bigint;unique"`
 	Item_id        int `json:"item" sql:"index:auction_item_id_index;type:bigint"`
 	Owner          string
 	OwnerRealm     string
@@ -16,8 +16,8 @@ type Auction struct {
 	Buyout         int `sql:"type:bigint"`
 	Quantity       int
 	TimeLeft       string
-	Rand           int
-	Seed           int
+	Rand           int `sql:"type:bigint"`
+	Seed           int `sql:"type:bigint"`
 	Context        int
 	BonusList      []Bonus `json:"bonusLists"`
 	Modifiers      []Modifier
