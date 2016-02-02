@@ -1,11 +1,3 @@
-web:
-  extends:
-    file: web.yml
-    service: web
-  links:
-    - db
-  environment:
-    - DATABASE_URL=postgres://postgres@db:5432/budgie_backend
 data:
   image: cogniteev/echo
   command: echo 'Data Container for PostgreSQL'
