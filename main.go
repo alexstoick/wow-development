@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alexstoick/wow/Godeps/_workspace/src/github.com/jinzhu/gorm"
+	"github.com/alexstoick/wow/Godeps/_workspace/src/github.com/pquerna/ffjson/ffjson"
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
-	"github.com/jinzhu/gorm"
-	"github.com/pquerna/ffjson/ffjson"
 	"io/ioutil"
 	"net/http"
 	"time"
