@@ -19,14 +19,10 @@ func handleError(err error) {
 }
 
 func SaveAuction(auction models.Auction, i int, db gorm.DB) {
-	//err := db.Create(&auction)
-	//if err != nil {
-	//	panic(err)
-	//}
-
 	db.Create(&auction)
 }
-func DownloadAHFile(url string) ([]byte, string) {
+
+func DownloadAHFile(url string) []byte {
 	t0 := time.Now()
 	fmt.Println(url)
 	resp, err := http.Get(url)
@@ -42,12 +38,12 @@ func DownloadAHFile(url string) ([]byte, string) {
 	}
 	t1 := time.Now()
 	fmt.Printf("The call to DOWNLOAD AH FILE took %v to run.\n", t1.Sub(t0))
-	return body, string(body)
+	return body
 }
 
 func ProcessAuctions(ah_file models.AHFile) {
 
-	body, _ := DownloadAHFile(ah_file.URL)
+	body := DownloadAHFile(ah_file.URL)
 	type JSONFile struct {
 		Realms   []models.Realm
 		Auctions []models.Auction
@@ -100,12 +96,9 @@ func GetLatestAHFilelist() models.AHFile {
 }
 
 func main() {
-
-	// db := database.ConnectToDb()
-	//database.AutoMigrateModels(db)
+	db := database.ConnectToDb()
+	database.AutoMigrateModels(db)
 
 	ah_file := GetLatestAHFilelist()
-	//var ah_file models.AHFile
-	//db.Last(&ah_file)
 	ProcessAuctions(ah_file)
 }
