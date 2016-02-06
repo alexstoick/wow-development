@@ -112,9 +112,11 @@ func PullData() {
 }
 
 func main() {
+	fmt.Println("starting datafetch")
 	c := cron.New()
 	c.AddFunc("@every 1m", func() { fmt.Println("lol"); PullData() })
 	c.Start()
 	for {
 	}
+	fmt.Println("ending datafetch")
 }

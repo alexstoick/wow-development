@@ -9,6 +9,7 @@ RUN go get github.com/tools/godep
 
 # Restore godep dependencies
 RUN godep restore
+RUN cd datafetch && godep restore
 
 RUN go install github.com/alexstoick/wow/datafetch
 RUN go install github.com/alexstoick/wow/web
