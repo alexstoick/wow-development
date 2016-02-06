@@ -1,6 +1,11 @@
+base:
+  build: .
 web:
-  extends:
-    file: web.yml
+  build: web/
+  links:
+    - db
+datafetch:
+  build: datafetch/
   links:
     - db
   environment:

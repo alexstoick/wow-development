@@ -1,0 +1,2 @@
+*/30 * * * * /go/bin/datafetch >> /var/log/cron.log 2>&1
+
