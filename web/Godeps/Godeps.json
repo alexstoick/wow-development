@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/alexstoick/wow/web",
+	"GoVersion": "go1.5.1",
+	"Deps": []
+}
