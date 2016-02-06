@@ -1,27 +1,5 @@
 {
 	"ImportPath": "github.com/alexstoick/wow",
 	"GoVersion": "go1.5.1",
-	"Deps": [
-		{
-			"ImportPath": "github.com/jinzhu/gorm",
-			"Rev": "37bf87aa2990b7753a4be804f2acd1ba55f27c48"
-		},
-		{
-			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-59-gb269bd0",
-			"Rev": "b269bd035a727d6c1081f76e7a239a1b00674c40"
-		},
-		{
-			"ImportPath": "github.com/pquerna/ffjson/ffjson",
-			"Rev": "4a0805c1782dcdf59a133bd8c91810245d5eda4c"
-		},
-		{
-			"ImportPath": "github.com/pquerna/ffjson/fflib/v1",
-			"Rev": "4a0805c1782dcdf59a133bd8c91810245d5eda4c"
-		},
-		{
-			"ImportPath": "github.com/qor/inflection",
-			"Rev": "45321e63b98c756df17369c027c1df89298e1288"
-		}
-	]
+	"Deps": []
 }
