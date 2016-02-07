@@ -85,6 +85,10 @@ func GetLatestAHFilelist() models.AHFile {
 		Files []models.AHFile
 	}
 	var file DataDump
+	err := json.Unmarshal(body, &file)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("%+v\n", file)
 	fmt.Printf("%+v\n", file.Files[0].URL)
 	ahfile := file.Files[0]

@@ -1,5 +1,7 @@
 version: '2'
 services:
+  base:
+    build: .
 #  web:
 #    build: ./web/
 #    image: wow_base
@@ -7,6 +9,8 @@ services:
 #      - db
   datafetch:
     build: ./datafetch/
+    volumes_from:
+      - base
     # links:
     # - db
     environment:

@@ -8,5 +8,3 @@ RUN go get github.com/jinzhu/gorm
 
 RUN go install github.com/alexstoick/wow/datafetch
 RUN go install github.com/alexstoick/wow/web
-# Setting up environment variables
-ENV ENV dev
