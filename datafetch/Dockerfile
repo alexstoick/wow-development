@@ -1,3 +1,4 @@
+FROM wow_base
 
 ENV ENV dev
 

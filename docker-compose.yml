@@ -2,26 +2,27 @@ version: '2'
 services:
   base:
     build: .
-  web:
-    build: ./web/
     image: wow_base
-    links:
-      - db
+#  web:
+#    build: ./web/
+#    image: wow_base
+#    links:
+#      - db
   datafetch:
-    build: ./datafetch
-    image: wow_base
-    links:
-      - db
+    image: base
+    build: ./datafetch/
+    # links:
+    # - db
     environment:
       - DATABASE_URL=postgres://postgres@db:5432/budgie_backend
-  data:
-    image: cogniteev/echo
-    command: echo 'Data Container for PostgreSQL'
-    volumes:
-      - ./datastore
-  db:
-    image: postgres
-    environment:
-      - POSTGRES_DB=wow_development
-    volumes_from:
-      - data
+    #  data:
+    #    image: cogniteev/echo
+    #    command: echo 'Data Container for PostgreSQL'
+    #    volumes:
+    #      - ./datastore
+    #  db:
+    #    image: postgres
+    #    environment:
+    #      - POSTGRES_DB=wow_development
+    #    volumes_from:
+    #      - data
