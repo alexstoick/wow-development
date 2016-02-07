@@ -1,6 +1,6 @@
-FROM wow_base
+FROM scratch
 
-ENV ENV dev
+ADD main /
 
 # Run the command on container startup
-ENTRYPOINT ["/go/bin/datafetch"]
+CMD ["/main"]

@@ -6,8 +6,6 @@ import (
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
 	"github.com/jinzhu/gorm"
-	"github.com/pquerna/ffjson/ffjson"
-	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -87,7 +85,6 @@ func GetLatestAHFilelist() models.AHFile {
 		Files []models.AHFile
 	}
 	var file DataDump
-	ffjson.Unmarshal(body, &file)
 	fmt.Printf("%+v\n", file)
 	fmt.Printf("%+v\n", file.Files[0].URL)
 	ahfile := file.Files[0]
@@ -114,11 +111,6 @@ func PullData() {
 
 func main() {
 	fmt.Println("starting datafetch")
-	c := cron.New()
 	//PullData()
-	c.AddFunc("@every 1m", func() { fmt.Println("lol") })
-	c.Start()
-	for {
-	}
 	fmt.Println("ending datafetch")
 }

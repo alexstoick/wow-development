@@ -1,15 +1,11 @@
 version: '2'
 services:
-  base:
-    build: .
-    image: wow_base
 #  web:
 #    build: ./web/
 #    image: wow_base
 #    links:
 #      - db
   datafetch:
-    image: base
     build: ./datafetch/
     # links:
     # - db
