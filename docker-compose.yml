@@ -3,13 +3,12 @@ services:
   base:
     build: .
   web:
-    build: web/
+    build: ./web/
     image: wow_base
     links:
       - db
   datafetch:
-    build:
-      dockerfile: ./datafetch
+    build: ./datafetch
     image: wow_base
     links:
       - db
@@ -19,7 +18,7 @@ services:
     image: cogniteev/echo
     command: echo 'Data Container for PostgreSQL'
     volumes:
-      - ~/Library/Application\ Support/Postgres/var-9.5-lol/
+      - ./datastore
   db:
     image: postgres
     environment:
