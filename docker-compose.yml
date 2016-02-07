@@ -1,23 +1,27 @@
-base:
-  build: .
-web:
-  build: web/
-  links:
-    - db
-datafetch:
-  build: datafetch/
-  links:
-    - db
-  environment:
-    - DATABASE_URL=postgres://postgres@db:5432/budgie_backend
-data:
-  image: cogniteev/echo
-  command: echo 'Data Container for PostgreSQL'
-  volumes:
-    - ~/Library/Application\ Support/Postgres/var-9.5-lol/
-db:
-  image: postgres
-  environment:
-    - POSTGRES_DB=wow_development
-  volumes_from:
-    - data
+version: '2'
+services:
+  base:
+    build: .
+  web:
+    build: web/
+    image: base
+    links:
+      - db
+  datafetch:
+    build: datafetch/
+    image: base
+    links:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres@db:5432/budgie_backend
+  data:
+    image: cogniteev/echo
+    command: echo 'Data Container for PostgreSQL'
+    volumes:
+      - ~/Library/Application\ Support/Postgres/var-9.5-lol/
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=wow_development
+    volumes_from:
+      - data

@@ -1,4 +1,3 @@
-FROM wow_base
 
 # Setting up working directory
 # WORKDIR /go/src/github.com/alexstoick/wow/web
