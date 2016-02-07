@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alexstoick/wow/datafetch/Godeps/_workspace/src/github.com/alexstoick/wow/database"
-	"github.com/alexstoick/wow/datafetch/Godeps/_workspace/src/github.com/alexstoick/wow/models"
-	"github.com/alexstoick/wow/datafetch/Godeps/_workspace/src/github.com/jinzhu/gorm"
-	"github.com/alexstoick/wow/datafetch/Godeps/_workspace/src/github.com/pquerna/ffjson/ffjson"
-	"github.com/alexstoick/wow/datafetch/Godeps/_workspace/src/github.com/robfig/cron"
+	"github.com/alexstoick/wow/database"
+	"github.com/alexstoick/wow/models"
+	"github.com/jinzhu/gorm"
+	"github.com/pquerna/ffjson/ffjson"
+	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -99,6 +99,7 @@ func GetLatestAHFilelist() models.AHFile {
 var running = false
 
 func PullData() {
+	fmt.Println("starting pull data")
 	if running == true {
 		return
 	}
