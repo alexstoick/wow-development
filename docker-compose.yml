@@ -4,12 +4,13 @@ services:
     build: .
   web:
     build: web/
-    image: base
+    image: wow_base
     links:
       - db
   datafetch:
-    build: datafetch/
-    image: base
+    build:
+      dockerfile: ./datafetch
+    image: wow_base
     links:
       - db
     environment:
