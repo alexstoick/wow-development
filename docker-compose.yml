@@ -1,28 +1,30 @@
 version: '2'
 services:
-  base:
-    build: .
+  # data:
+  #   image: busybox
+  #   volumes:
+  #     - /output
+  # data:
+  # build: ./data/
+  datafetch:
+    build: ./datafetch/
+    depends_on:
+      - db
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=wow_development
+    volumes:
+      - data:/var/lib/postgresql
+volumes:
+  data: {}
 #  web:
 #    build: ./web/
 #    image: wow_base
 #    links:
 #      - db
-  datafetch:
-    build: ./datafetch/
-    volumes_from:
-      - base
-    # links:
-    # - db
-    environment:
-      - DATABASE_URL=postgres://postgres@db:5432/budgie_backend
-    #  data:
-    #    image: cogniteev/echo
-    #    command: echo 'Data Container for PostgreSQL'
-    #    volumes:
-    #      - ./datastore
-    #  db:
-    #    image: postgres
-    #    environment:
-    #      - POSTGRES_DB=wow_development
-    #    volumes_from:
-    #      - data
+#
+     # links:
+     # - db
+     # environment:
+     # - DATABASE_URL=postgres://postgres@db:5432/budgie_backend

@@ -75,7 +75,10 @@ func ProcessAuctions(ah_file models.AHFile) {
 func GetLatestAHFilelist() models.AHFile {
 
 	t0 := time.Now()
-	resp, _ := http.Get("https://eu.api.battle.net/wow/auction/data/quelthalas?locale=en_GB&apikey=5kuxc3d7rjwk75dvds22egepcwajwtqx")
+	resp, err1 := http.Get("https://eu.api.battle.net/wow/auction/data/quelthalas?locale=en_GB&apikey=5kuxc3d7rjwk75dvds22egepcwajwtqx")
+	if err1 != nil {
+		panic(err1)
+	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	t1 := time.Now()
@@ -115,6 +118,12 @@ func PullData() {
 
 func main() {
 	fmt.Println("starting datafetch")
-	//PullData()
+	db := database.ConnectToDb()
+	database.AutoMigrateModels(db)
+
+	ah_file := GetLatestAHFilelist()
+	fmt.Println(ah_file)
+	for {
+	}
 	fmt.Println("ending datafetch")
 }
