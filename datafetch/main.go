@@ -6,6 +6,7 @@ import (
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
 	"github.com/jinzhu/gorm"
+	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -103,6 +104,7 @@ func GetLatestAHFilelist() models.AHFile {
 var running = false
 
 func PullData() {
+	fmt.Println("starting to fetch time: " + time.Unix(time.Now().Unix(), 0).Format("2006-01-02 15:04:05"))
 	fmt.Println("starting pull data")
 	if running == true {
 		return
@@ -123,7 +125,11 @@ func main() {
 
 	ah_file := GetLatestAHFilelist()
 	fmt.Println(ah_file)
-	for {
-	}
+	c := cron.New()
+	c.AddFunc("@every 30m", func() {
+		PullData()
+	})
+	c.Start()
+	select {}
 	fmt.Println("ending datafetch")
 }
