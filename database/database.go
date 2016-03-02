@@ -30,7 +30,7 @@ func ConnectToDb() (db gorm.DB) {
 		DB_NAME     = "wow_development"
 	)
 	dbinfo := fmt.Sprintf("host=wow_db_1 user=postgres dbname=%s sslmode=disable", DB_NAME)
-	fmt.Println(dbinfo)
+	// dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DB_NAME)
 	pq.ParseURL(dbinfo)
 	var err error
 

@@ -6,7 +6,7 @@ import (
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
 	"github.com/jinzhu/gorm"
-	"github.com/robfig/cron"
+	//"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -19,12 +19,15 @@ func handleError(err error) {
 }
 
 func SaveAuction(auction models.Auction, i int, db gorm.DB) {
-	db.Create(&auction)
+	var db_auct models.Auction
+	db.Where(models.Auction{AuctionID: auction.AuctionID}).First(&db_auct)
+	if db_auct.AuctionID == 0 {
+		db.FirstOrCreate(&auction, auction)
+	}
 }
 
 func DownloadAHFile(url string) []byte {
 	t0 := time.Now()
-	fmt.Println(url)
 	resp, err := http.Get(url)
 
 	if err != nil {
@@ -56,34 +59,28 @@ func ProcessAuctions(ah_file models.AHFile) {
 	}
 
 	db := database.ConnectToDb()
-	fmt.Printf("AUCTIONS LENGTH %d\n", len(jsonfile.Auctions))
 
 	t0 := time.Now()
-	for i := 0; i < len(jsonfile.Auctions); i++ { //i < 5; i++ { //
+	// for i := 0; i < len(jsonfile.Auctions); i++ { //i < 5; i++ { //
+	for i := 0; i < 5; i++ {
 		auction := jsonfile.Auctions[i]
 		auction.ImportedFromId = ah_file.ID
 		auction.ImportedAt = time.Now()
-		t2 := time.Now()
 		SaveAuction(auction, i, db)
-		t3 := time.Now()
-		fmt.Printf("The call to INSERT (%d) AUCTIOS took %v to run.\n", i, t3.Sub(t2))
 	}
 
 	t1 := time.Now()
 	fmt.Printf("The call to SAVE AUCTIONS took %v to run.\n", t1.Sub(t0))
 }
 
-func GetLatestAHFilelist() models.AHFile {
+func GetLatestAHFilelist() (models.AHFile, bool) {
 
-	t0 := time.Now()
 	resp, err1 := http.Get("https://eu.api.battle.net/wow/auction/data/quelthalas?locale=en_GB&apikey=5kuxc3d7rjwk75dvds22egepcwajwtqx")
 	if err1 != nil {
 		panic(err1)
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	t1 := time.Now()
-	fmt.Printf("The call took %v to run.\n", t1.Sub(t0))
 
 	type DataDump struct {
 		Files []models.AHFile
@@ -93,28 +90,31 @@ func GetLatestAHFilelist() models.AHFile {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%+v\n", file)
-	fmt.Printf("%+v\n", file.Files[0].URL)
 	ahfile := file.Files[0]
 	db := database.ConnectToDb()
-	db.Create(&ahfile)
-	return ahfile
+	var db_file models.AHFile
+	db.Where(models.AHFile{LastModified: ahfile.LastModified}).First(&db_file)
+	if db_file.ID == 0 {
+		db.Create(&ahfile)
+		return ahfile, true
+	}
+	return db_file, false
 }
 
 var running = false
 
 func PullData() {
 	fmt.Println("starting to fetch time: " + time.Unix(time.Now().Unix(), 0).Format("2006-01-02 15:04:05"))
-	fmt.Println("starting pull data")
 	if running == true {
 		return
 	}
 	running = true
-	db := database.ConnectToDb()
-	database.AutoMigrateModels(db)
-
-	ah_file := GetLatestAHFilelist()
-	ProcessAuctions(ah_file)
+	ah_file, new := GetLatestAHFilelist()
+	if new {
+		fmt.Println("processing auctions")
+		ProcessAuctions(ah_file)
+	}
+	fmt.Println("no new ah file")
 	running = false
 }
 
@@ -122,14 +122,13 @@ func main() {
 	fmt.Println("starting datafetch")
 	db := database.ConnectToDb()
 	database.AutoMigrateModels(db)
+	PullData()
 
-	ah_file := GetLatestAHFilelist()
-	fmt.Println(ah_file)
-	c := cron.New()
-	c.AddFunc("@every 30m", func() {
-		PullData()
-	})
-	c.Start()
-	select {}
+	// c := cron.New()
+	// c.AddFunc("@every 5m", func() {
+	// 	PullData()
+	// })
+	// c.Start()
+	// select {}
 	fmt.Println("ending datafetch")
 }
