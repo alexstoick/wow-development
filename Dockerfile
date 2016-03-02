@@ -5,6 +5,9 @@ WORKDIR /go/src/github.com/alexstoick/wow/
 ADD . /go/src/github.com/alexstoick/wow/
 
 RUN go get github.com/jinzhu/gorm
+RUN go get github.com/robfig/cron
+RUN	go github.com/empatica/csvparser
+RUN go github.com/oleiade/reflections
 
 # RUN go install github.com/alexstoick/wow/datafetch
 RUN cd datafetch && CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o datafetch
