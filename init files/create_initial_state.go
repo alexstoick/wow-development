@@ -23,6 +23,7 @@ func ImportItemsCSV() {
 		SkipFirstLine:   true, //default:false
 		SkipEmptyValues: true, //default:false. It will skip empty values and won't try to parse them
 	}
+	db := database.ConnectToDb()
 	t0 := time.Now()
 	parsedCSV, err := csvParser.Parse(models.Item{})
 	handleError(err)
@@ -43,6 +44,7 @@ func CreateCraftableItems() {
 		ItemName string
 	}
 
+	db := database.ConnectToDb()
 	var csvParser = parser.CsvParser{
 		CsvFile:         "craftable.csv",
 		CsvSeparator:    ',',
@@ -69,6 +71,7 @@ func CreateCraftableItems() {
 }
 
 func CreateItemMats() {
+	db := database.ConnectToDb()
 	var csvParser = parser.CsvParser{
 		CsvFile:         "./craftable_mats.csv",
 		CsvSeparator:    ',',
@@ -128,12 +131,11 @@ func CreateItemMats() {
 	}
 }
 
-var db gorm.DB
-
 func main() {
 
 	db := database.ConnectToDb()
 	database.AutoMigrateModels(db)
+	db.Close()
 	ImportItemsCSV()
 	CreateCraftableItems()
 	CreateItemMats()
