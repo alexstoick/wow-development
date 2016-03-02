@@ -61,13 +61,14 @@ func ProcessAuctions(ah_file models.AHFile) {
 	db := database.ConnectToDb()
 
 	t0 := time.Now()
-	// for i := 0; i < len(jsonfile.Auctions); i++ { //i < 5; i++ { //
-	for i := 0; i < 5; i++ {
+	for i := 0; i < len(jsonfile.Auctions); i++ { //i < 5; i++ { //
+		// for i := 0; i < 5; i++ {
 		auction := jsonfile.Auctions[i]
 		auction.ImportedFromId = ah_file.ID
 		auction.ImportedAt = time.Now()
 		SaveAuction(auction, i, db)
 	}
+	db.Close()
 
 	t1 := time.Now()
 	fmt.Printf("The call to SAVE AUCTIONS took %v to run.\n", t1.Sub(t0))
@@ -96,8 +97,10 @@ func GetLatestAHFilelist() (models.AHFile, bool) {
 	db.Where(models.AHFile{LastModified: ahfile.LastModified}).First(&db_file)
 	if db_file.ID == 0 {
 		db.Create(&ahfile)
+		db.Close()
 		return ahfile, true
 	}
+	db.Close()
 	return db_file, false
 }
 
@@ -122,6 +125,8 @@ func main() {
 	fmt.Println("starting datafetch")
 	db := database.ConnectToDb()
 	database.AutoMigrateModels(db)
+	db.Close()
+
 	PullData()
 
 	// c := cron.New()
