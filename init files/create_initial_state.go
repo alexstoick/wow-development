@@ -5,7 +5,6 @@ import (
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
 	"github.com/empatica/csvparser"
-	"github.com/jinzhu/gorm"
 	"github.com/oleiade/reflections"
 	"time"
 )
@@ -73,31 +72,39 @@ func CreateCraftableItems() {
 func CreateItemMats() {
 	db := database.ConnectToDb()
 	var csvParser = parser.CsvParser{
-		CsvFile:         "./craftable_mats.csv",
+		CsvFile:         "./spells.csv",
 		CsvSeparator:    ',',
 		SkipFirstLine:   true, //default:false
 		SkipEmptyValues: true, //default:false. It will skip empty values and won't try to parse them
 	}
 
 	type ItemAndMaterials struct {
-		ItemID         int
-		CreatedBySpell int
-		Mat1           int
-		Mat1Qty        int
-		Mat2           int
-		Mat2Qty        int
-		Mat3           int
-		Mat3Qty        int
-		Mat4           int
-		Mat4Qty        int
-		Mat5           int
-		Mat5Qty        int
-		Mat6           int
-		Mat6Qty        int
-		Mat7           int
-		Mat7Qty        int
-		Mat8           int
-		Mat8Qty        int
+		SpellId     int
+		SpellName   string
+		Icon        string
+		Profession  string
+		ProfLevel   string
+		Red         string
+		Yellow      string
+		Green       string
+		Grey        string
+		CreatesItem int
+		Mat1        int
+		Mat1Qty     int
+		Mat2        int
+		Mat2Qty     int
+		Mat3        int
+		Mat3Qty     int
+		Mat4        int
+		Mat4Qty     int
+		Mat5        int
+		Mat5Qty     int
+		Mat6        int
+		Mat6Qty     int
+		Mat7        int
+		Mat7Qty     int
+		Mat8        int
+		Mat8Qty     int
 	}
 
 	t0 := time.Now()
@@ -109,8 +116,16 @@ func CreateItemMats() {
 	fmt.Printf("CSV lenght %v\n", len(parsedCSV))
 
 	for i := 0; i < len(parsedCSV); i++ {
+		//for i := 0; i < 1; i++ {
 		item_and_mats := parsedCSV[i].(*ItemAndMaterials)
-		fmt.Printf("Inserting %d\n", i)
+		//fmt.Printf("Inserting %d\n", i)
+		spell := models.Spell{
+			SpellID:    item_and_mats.SpellId,
+			SpellName:  item_and_mats.SpellName,
+			Profession: item_and_mats.Profession,
+			ItemID:     item_and_mats.CreatesItem,
+		}
+		db.Create(&spell)
 
 		for i := 1; i < 9; i++ {
 			fieldName1 := fmt.Sprintf("Mat%d", i)
@@ -118,15 +133,15 @@ func CreateItemMats() {
 			value1, _ := reflections.GetField(item_and_mats, fieldName1)
 			value2, _ := reflections.GetField(item_and_mats, fieldName2)
 			item_mat := models.ItemMaterial{
-				ItemID:     item_and_mats.ItemID,
+				SpellID:    spell.SpellID,
 				MaterialID: value1.(int),
 				Quantity:   value2.(int),
 			}
-			fmt.Printf("Real item: %+v\n", item_mat)
-			db.Create(&item_mat)
+			//fmt.Printf("Real item: %+v\n", item_mat)
 			if value1 == 0 {
 				break
 			}
+			db.Create(&item_mat)
 		}
 	}
 }
@@ -136,7 +151,5 @@ func main() {
 	db := database.ConnectToDb()
 	database.AutoMigrateModels(db)
 	db.Close()
-	ImportItemsCSV()
-	CreateCraftableItems()
 	CreateItemMats()
 }

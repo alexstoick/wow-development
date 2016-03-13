@@ -7,7 +7,12 @@ services:
   # data:
   # build: ./data/
   datafetch:
+    restart: always
     build: ./datafetch/
+    depends_on:
+      - db
+  web:
+    build: ./web/
     depends_on:
       - db
   db:

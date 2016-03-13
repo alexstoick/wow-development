@@ -1,0 +1,58 @@
+package controllers
+
+import (
+	//"encoding/json"
+	//"fmt"
+	"github.com/alexstoick/wow/models"
+	//"github.com/alexstoick/wow/web/helpers"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+)
+
+func FetchDatabaseFromContext(c *gin.Context) gorm.DB {
+	fake_db, _ := c.Get("db")
+	db := fake_db.(gorm.DB)
+	return db
+}
+
+func FetchItemFromContext(c *gin.Context) models.Item {
+	var item models.Item
+	db := FetchDatabaseFromContext(c)
+	err := db.Debug().Preload("Auctions").Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item, c.Param("id")).Error
+
+	if err != nil {
+		panic(err)
+	}
+	return item
+}
+func GetItem(c *gin.Context) {
+	item := FetchItemFromContext(c)
+	item.Auctions = []models.Auction{}
+	c.JSON(200, item.CreateItemSummary(FetchDatabaseFromContext(c)))
+}
+func GetItemMaterials(c *gin.Context) {
+	item := FetchItemFromContext(c)
+	c.JSON(200, item.Spells)
+}
+
+func GetLatestPrice(c *gin.Context) {
+	item := FetchItemFromContext(c)
+	c.JSON(200, map[string]int{"price": item.GetLatestPrice(FetchDatabaseFromContext(c))})
+}
+func GetAveragePricesByDay(c *gin.Context) {
+	item := FetchItemFromContext(c)
+	var prices []models.PriceSummary
+	prices = item.GetAveragePrices(FetchDatabaseFromContext(c))
+
+	c.JSON(200, prices)
+}
+
+func GetItemAuctions(c *gin.Context) {
+	item := FetchItemFromContext(c)
+	aucts := item.Auctions
+	var presenterAucts []models.PublicAuction
+	for _, auct := range aucts {
+		presenterAucts = append(presenterAucts, auct.GetPresenter())
+	}
+	c.JSON(200, presenterAucts)
+}

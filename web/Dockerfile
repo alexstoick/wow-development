@@ -1,6 +1,6 @@
-FROM scratch
+FROM centurylink/ca-certs
 
-ADD main /
+ADD ./web /
 
 # Run the command on container startup
-CMD ["/main"]
+CMD ["./web"]

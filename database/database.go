@@ -11,6 +11,7 @@ import (
 func AutoMigrateModels(db gorm.DB) {
 	t0 := time.Now()
 	db.AutoMigrate(&models.Item{})
+	db.AutoMigrate(&models.Spell{})
 	db.AutoMigrate(&models.ItemMaterial{})
 	db.AutoMigrate(&models.AHFile{})
 	db.AutoMigrate(&models.Auction{})
@@ -29,8 +30,8 @@ func ConnectToDb() (db gorm.DB) {
 		DB_PASSWORD = ""
 		DB_NAME     = "wow_development"
 	)
-	dbinfo := fmt.Sprintf("host=wow_db_1 user=postgres dbname=%s sslmode=disable", DB_NAME)
-	// dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DB_NAME)
+	//dbinfo := fmt.Sprintf("host=wow_db_1 user=postgres dbname=%s sslmode=disable", DB_NAME)
+	dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DB_NAME)
 	pq.ParseURL(dbinfo)
 	var err error
 

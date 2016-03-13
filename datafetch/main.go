@@ -6,7 +6,7 @@ import (
 	"github.com/alexstoick/wow/database"
 	"github.com/alexstoick/wow/models"
 	"github.com/jinzhu/gorm"
-	//"github.com/robfig/cron"
+	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -129,11 +129,11 @@ func main() {
 
 	PullData()
 
-	// c := cron.New()
-	// c.AddFunc("@every 5m", func() {
-	// 	PullData()
-	// })
-	// c.Start()
-	// select {}
+	c := cron.New()
+	c.AddFunc("@every 5m", func() {
+		PullData()
+	})
+	c.Start()
+	select {}
 	fmt.Println("ending datafetch")
 }
