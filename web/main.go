@@ -54,7 +54,7 @@ func main() {
 	v1 := router.Group("v1/")
 	{
 		v1.GET("/items/:id", controllers.GetItem)
-		v1.GET("/items/:id/materials", controllers.GetItemMaterials)
+		v1.GET("/items/:id/crafts", controllers.GetItemCrafts)
 		v1.GET("/items/:id/auctions", controllers.GetItemAuctions)
 		v1.GET("/items/:id/price", controllers.GetLatestPrice)
 		v1.GET("/items/:id/history_price", controllers.GetAveragePricesByDay)

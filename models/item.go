@@ -52,19 +52,36 @@ type PriceSummary struct {
 	Date    time.Time
 }
 
-type ItemSummary struct {
+type ItemSummaryWithoutCrafts struct {
 	Item       Item
 	BuyPrice   int
 	CraftPrice int
 }
 
+type ItemSummary struct {
+	Item     Item
+	BuyPrice int
+	Crafts   []CraftSummary
+}
+
+type CraftSummary struct {
+	SpellID    int
+	Price      int
+	Name       string
+	Profession string
+}
+
 func (item Item) GetLatestPrice(db gorm.DB) int {
 	prices := item.GetAveragePrices(db)
 
-	return prices[len(prices)-1].Average
+	if len(prices) > 0 {
+		return prices[len(prices)-1].Average
+	}
+	return 0
 }
+
 func (item Item) GetAveragePrices(db gorm.DB) []PriceSummary {
-	rows, _ := db.Raw("select count(auctions.id), avg(buyout), imported_at::date, extract(hour from imported_at) from auctions where item_id =? group by 3,4 order by 3,4", item.ItemID).Rows()
+	rows, _ := db.Raw("select count(auctions.id), avg(buyout/quantity), imported_at::date, extract(hour from imported_at) from auctions where item_id =? group by 3,4 order by 3,4", item.ItemID).Rows()
 	var summary []PriceSummary
 	for rows.Next() {
 		var average float64
@@ -79,22 +96,43 @@ func (item Item) GetAveragePrices(db gorm.DB) []PriceSummary {
 	return summary
 }
 
-func (item Item) GetLatestCraftPrice(db gorm.DB) int {
-	var materials []Item
-	spell := item.Spells[0]
-	for _, itemMat := range spell.ItemMaterials {
-		materials = append(materials, itemMat.Material)
+func (item Item) CheapestCraftPrice(db gorm.DB) int {
+	min := 9999999999
+
+	for _, spell := range item.Spells {
+		price := spell.GetLatestCraftPrice(db)
+		if min > price {
+			min = price
+		}
 	}
-	sum := 0
-	for _, item := range materials {
-		sum = sum + item.GetLatestPrice(db)
-	}
-	return sum
+
+	return min
 }
 
-func (item Item) CreateItemSummary(db gorm.DB) ItemSummary {
+func (item Item) CreateSpellsForDisplay(db gorm.DB) []SpellSummary {
+	var summary []SpellSummary
+
+	for _, spell := range item.Spells {
+		summary = append(summary, spell.CreateSummary(db))
+	}
+	return summary
+}
+
+func (item Item) CreateSummaryWithoutCrafts(db gorm.DB) ItemSummaryWithoutCrafts {
+	return ItemSummaryWithoutCrafts{item, item.GetLatestPrice(db), item.CheapestCraftPrice(db)}
+}
+
+func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 	buyPrice := item.GetLatestPrice(db)
-	craftPrice := item.GetLatestCraftPrice(db)
-	summary := ItemSummary{item, buyPrice, craftPrice}
+	var crafts []CraftSummary
+	for _, spell := range item.Spells {
+		crafts = append(crafts, CraftSummary{
+			SpellID:    spell.SpellID,
+			Price:      spell.GetLatestCraftPrice(db),
+			Profession: spell.Profession,
+			Name:       spell.SpellName,
+		})
+	}
+	summary := ItemSummary{item, buyPrice, crafts}
 	return summary
 }

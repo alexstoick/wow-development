@@ -28,11 +28,11 @@ func FetchItemFromContext(c *gin.Context) models.Item {
 func GetItem(c *gin.Context) {
 	item := FetchItemFromContext(c)
 	item.Auctions = []models.Auction{}
-	c.JSON(200, item.CreateItemSummary(FetchDatabaseFromContext(c)))
+	c.JSON(200, item.CreateSummary(FetchDatabaseFromContext(c)))
 }
-func GetItemMaterials(c *gin.Context) {
+func GetItemCrafts(c *gin.Context) {
 	item := FetchItemFromContext(c)
-	c.JSON(200, item.Spells)
+	c.JSON(200, item.CreateSpellsForDisplay(FetchDatabaseFromContext(c)))
 }
 
 func GetLatestPrice(c *gin.Context) {
