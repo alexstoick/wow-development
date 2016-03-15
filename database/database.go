@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/alexstoick/wow/models"
 	"github.com/jinzhu/gorm"
-	"github.com/lib/pq"
+	_ "github.com/lib/pq"
 	"time"
 )
 
@@ -24,7 +24,7 @@ func handleError(err error) {
 		panic(err)
 	}
 }
-func ConnectToDb() (db gorm.DB) {
+func ConnectToDb() gorm.DB {
 	const (
 		DB_USER     = ""
 		DB_PASSWORD = ""
@@ -32,10 +32,8 @@ func ConnectToDb() (db gorm.DB) {
 	)
 	//dbinfo := fmt.Sprintf("host=wow_db_1 user=postgres dbname=%s sslmode=disable", DB_NAME)
 	dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DB_NAME)
-	pq.ParseURL(dbinfo)
-	var err error
 
-	db, err = gorm.Open("postgres", dbinfo)
+	db, err := gorm.Open("postgres", dbinfo)
 	handleError(err)
-	return db
+	return *db
 }
