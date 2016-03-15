@@ -11,6 +11,5 @@ RUN go get github.com/oleiade/reflections
 RUN go get github.com/gin-gonic/gin
 RUN go get github.com/lib/pq
 
-# RUN go install github.com/alexstoick/wow/datafetch
 RUN cd datafetch && CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o datafetch
-# RUN go install github.com/alexstoick/wow/web
+RUN cd web && CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o web

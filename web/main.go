@@ -6,7 +6,6 @@ import (
 	"github.com/alexstoick/wow/web/controllers"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
 )
 
 var db gorm.DB
@@ -43,8 +42,6 @@ func main() {
 
 	db = database.ConnectToDb()
 	database.AutoMigrateModels(db)
-
-	godotenv.Load()
 
 	router := gin.Default()
 
