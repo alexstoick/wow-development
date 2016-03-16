@@ -2,7 +2,7 @@ package controllers
 
 import (
 	//"encoding/json"
-	//"fmt"
+	"fmt"
 	"github.com/alexstoick/wow/models"
 	//"github.com/alexstoick/wow/web/helpers"
 	"github.com/gin-gonic/gin"
@@ -18,6 +18,7 @@ func FetchDatabaseFromContext(c *gin.Context) gorm.DB {
 func FetchItemFromContext(c *gin.Context) models.Item {
 	var item models.Item
 	db := FetchDatabaseFromContext(c)
+	fmt.Printf("DB in fetchItem: %+v\n", db)
 	err := db.Debug().Preload("Auctions").Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item, c.Param("id")).Error
 
 	if err != nil {

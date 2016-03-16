@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -81,8 +82,11 @@ func (item Item) GetLatestPrice(db gorm.DB) int {
 }
 
 func (item Item) GetAveragePrices(db gorm.DB) []PriceSummary {
-	rows, _ := db.Raw("select count(auctions.id), avg(buyout/quantity), imported_at::date, extract(hour from imported_at) from auctions where item_id =? group by 3,4 order by 3,4", item.ItemID).Rows()
+	rows, err := db.Debug().Raw("select count(auctions.auction_id), avg(buyout/quantity), imported_at::date, extract(hour from imported_at) from auctions where item_id =? group by 3,4 order by 3,4", item.ItemID).Rows()
 	var summary []PriceSummary
+	fmt.Printf("DB in GetAvgPrices: %+v\n", db)
+	fmt.Printf("rows in GetAvgPrices: %+v\n", rows)
+	fmt.Printf("err in GetAvgPrices: %+v\n", err)
 	for rows.Next() {
 		var average float64
 		var count int

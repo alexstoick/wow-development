@@ -1,11 +1,5 @@
 version: '2'
 services:
-  # data:
-  #   image: busybox
-  #   volumes:
-  #     - /output
-  # data:
-  # build: ./data/
   datafetch:
     restart: always
     build: ./datafetch/
@@ -25,13 +19,3 @@ services:
       - data:/var/lib/postgresql
 volumes:
   data: {}
-#  web:
-#    build: ./web/
-#    image: wow_base
-#    links:
-#      - db
-#
-     # links:
-     # - db
-     # environment:
-     # - DATABASE_URL=postgres://postgres@db:5432/budgie_backend

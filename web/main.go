@@ -55,17 +55,6 @@ func main() {
 		v1.GET("/items/:id/auctions", controllers.GetItemAuctions)
 		v1.GET("/items/:id/price", controllers.GetLatestPrice)
 		v1.GET("/items/:id/history_price", controllers.GetAveragePricesByDay)
-		//v1.POST("/users", controllers.CreateUser)
-		//v1.POST("/login", controllers.AuthUser)
-		//v1.GET("/verify_token", controllers.VerifyToken)
-		//v1.POST("/renew_token", controllers.RenewToken)
-
-		//authentication := v1.Use(controllers.ValidateAuthentication)
-
-		//authentication.POST("/users/me/payments", controllers.CreatePayment)
-
-		//authentication.GET("/users/me/payments", controllers.GetUserPayments)
-		//authentication.GET("/users/me/payments/:payment_id", controllers.GetPaymentBeneficiaries)
 	}
 
 	port := ":3000"
