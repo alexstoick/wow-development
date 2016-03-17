@@ -60,9 +60,10 @@ type ItemSummaryWithoutCrafts struct {
 }
 
 type ItemSummary struct {
-	Item     Item
-	BuyPrice int
-	Crafts   []CraftSummary
+	Item      Item
+	BuyPrice  int
+	UpdatedAt time.Time
+	Crafts    []CraftSummary
 }
 
 type CraftSummary struct {
@@ -137,6 +138,8 @@ func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 			Name:       spell.SpellName,
 		})
 	}
-	summary := ItemSummary{item, buyPrice, crafts}
+	updated_at := item.Auctions[len(item.Auctions)-1].ImportedAt
+	item.Auctions = []Auction{}
+	summary := ItemSummary{item, buyPrice, updated_at, crafts}
 	return summary
 }
