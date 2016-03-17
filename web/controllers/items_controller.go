@@ -19,7 +19,9 @@ func FetchItemFromContext(c *gin.Context) models.Item {
 	var item models.Item
 	db := FetchDatabaseFromContext(c)
 	fmt.Printf("DB in fetchItem: %+v\n", db)
-	err := db.Debug().Preload("Auctions").Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item, c.Param("id")).Error
+	err := db.Debug().Preload("Auctions", func(db *gorm.DB) *gorm.DB {
+		return db.Order("auctions.imported_at DESC")
+	}).Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item, c.Param("id")).Error
 
 	if err != nil {
 		panic(err)
