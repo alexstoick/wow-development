@@ -77,7 +77,7 @@ func (item Item) GetLatestPrice(db gorm.DB) int {
 	prices := item.GetAveragePrices(db)
 
 	if len(prices) > 0 {
-		return prices[len(prices)-1].Average
+		return prices[0].Average
 	}
 	return 0
 }
@@ -138,7 +138,7 @@ func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 			Name:       spell.SpellName,
 		})
 	}
-	updated_at := item.Auctions[len(item.Auctions)-1].ImportedAt
+	updated_at := item.Auctions[0].ImportedAt
 	item.Auctions = []Auction{}
 	summary := ItemSummary{item, buyPrice, updated_at, crafts}
 	return summary
