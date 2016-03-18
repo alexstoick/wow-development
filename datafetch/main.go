@@ -121,23 +121,25 @@ func PullData() {
 	ah_file, new := GetLatestAHFilelist()
 	if new {
 		fmt.Println("processing auctions")
+		InvalidateExistingAuctions()
 		ProcessAuctions(ah_file)
 	}
 	fmt.Println("no new ah file")
 	running = false
 }
 
-func main() {
-	fmt.Println("starting datafetch")
+func InvalidateExistingAuctions() {
 	db := database.ConnectToDb()
-	database.AutoMigrateModels(db)
-
-	// Invalidate all existing auctions
 	db.Exec(
 		"UPDATE auctions SET present = ?, present_changed = ? WHERE present = ?",
 		false, time.Now(), true,
 	)
+}
 
+func main() {
+	fmt.Println("starting datafetch")
+	db := database.ConnectToDb()
+	database.AutoMigrateModels(db)
 	db.Close()
 
 	PullData()
