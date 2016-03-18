@@ -20,7 +20,7 @@ func FetchItemFromContext(c *gin.Context) models.Item {
 	db := FetchDatabaseFromContext(c)
 	fmt.Printf("DB in fetchItem: %+v\n", db)
 	err := db.Debug().Preload("Auctions", func(db *gorm.DB) *gorm.DB {
-		return db.Order("auctions.imported_at DESC")
+		return db.Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC")
 	}).Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item, c.Param("id")).Error
 
 	if err != nil {
