@@ -16,8 +16,6 @@ type Auction struct {
 	Rand           int `sql:"type:bigint"`
 	Seed           int `sql:"type:bigint"`
 	Context        int
-	BonusList      []Bonus `json:"bonusLists"`
-	Modifiers      []Modifier
 	PetSpeciesId   int
 	PetBreedId     int
 	PetLevel       int
@@ -25,6 +23,8 @@ type Auction struct {
 	ImportedFrom   AHFile
 	ImportedFromId int       `json:"-" sql:"index:auction_imported_from_index"`
 	ImportedAt     time.Time `sql:"index:auction_imported_at_index"`
+	Present        bool      `sql:"index:auction_present_index"`
+	PresentChanged time.Time `sql:"index:auction_present_changed_index"`
 }
 
 type PublicAuction struct {

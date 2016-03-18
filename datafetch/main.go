@@ -22,7 +22,13 @@ func SaveAuction(auction models.Auction, i int, db gorm.DB) {
 	var db_auct models.Auction
 	db.Where(models.Auction{AuctionID: auction.AuctionID}).First(&db_auct)
 	if db_auct.AuctionID == 0 {
+		auction.Present = true
+		auction.PresentChanged = time.Now()
 		db.FirstOrCreate(&auction, auction)
+	} else {
+		db_auct.Present = true
+		auction.PresentChanged = time.Now()
+		db.Save(db_auct)
 	}
 }
 
@@ -125,6 +131,13 @@ func main() {
 	fmt.Println("starting datafetch")
 	db := database.ConnectToDb()
 	database.AutoMigrateModels(db)
+
+	// Invalidate all existing auctions
+	db.Exec(
+		"UPDATE auctions SET present = ?, present_changed = ? WHERE present = ?",
+		false, time.Now(), true,
+	)
+
 	db.Close()
 
 	PullData()
