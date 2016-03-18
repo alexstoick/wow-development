@@ -138,7 +138,13 @@ func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 			Name:       spell.SpellName,
 		})
 	}
-	updated_at := item.Auctions[0].ImportedAt
+	var updated_at time.Time
+	if len(item.Auctions) > 0 {
+		updated_at = item.Auctions[0].ImportedAt
+	} else {
+		updated_at = time.Now().AddDate(0, 0, -3)
+	}
+
 	item.Auctions = []Auction{}
 	summary := ItemSummary{item, buyPrice, updated_at, crafts}
 	return summary
