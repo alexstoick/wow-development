@@ -55,6 +55,7 @@ func main() {
 		v1.GET("/items/:id/auctions", controllers.GetItemAuctions)
 		v1.GET("/items/:id/price", controllers.GetLatestPrice)
 		v1.GET("/items/:id/history_price", controllers.GetAveragePricesByDay)
+		v1.GET("/last_update", controllers.LastUpdate)
 	}
 
 	port := ":3000"
