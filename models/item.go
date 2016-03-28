@@ -128,7 +128,6 @@ func (item Item) CreateSummaryWithoutCrafts(db gorm.DB) ItemSummaryWithoutCrafts
 }
 
 func (item Item) CreateSummary(db gorm.DB) ItemSummary {
-	//buyPrice := item.GetLatestPrice(db)
 	var crafts []CraftSummary
 	for _, spell := range item.Spells {
 		crafts = append(crafts, CraftSummary{
@@ -138,17 +137,25 @@ func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 			Name:       spell.SpellName,
 		})
 	}
-	var updated_at time.Time
-	var buyPrice int
+
+	buyPrice, updated_at := item.ComputeLatestBuyprice()
+
+	summary := ItemSummary{item, buyPrice, updated_at, crafts}
+	return summary
+}
+
+func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
+
+	//item.LoadAuctions()
+
 	if len(item.Auctions) > 0 {
 		updated_at = item.Auctions[0].ImportedAt
-		buyPrice = item.Auctions[0].Buyout / item.Auctions[0].Quantity
+		buy_price = item.Auctions[0].Buyout / item.Auctions[0].Quantity
 	} else {
-		buyPrice = 999999999
+		buy_price = 999999999
 		updated_at = time.Now().AddDate(0, 0, -3)
 	}
 
-	item.Auctions = []Auction{}
-	summary := ItemSummary{item, buyPrice, updated_at, crafts}
-	return summary
+	return buy_price, updated_at
+
 }

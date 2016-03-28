@@ -16,6 +16,7 @@ func FetchDatabaseFromContext(c *gin.Context) gorm.DB {
 func FetchItemFromContext(c *gin.Context) models.Item {
 	var item models.Item
 	db := FetchDatabaseFromContext(c)
+	item.LoadItem(db, c.Param("id"))
 	err := db.Debug().Preload("Auctions", func(db *gorm.DB) *gorm.DB {
 		return db.Where("present = ?", true).Where("buyout > 0").Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC")
 	}).Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item, c.Param("id")).Error
