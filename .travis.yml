@@ -1,0 +1,21 @@
+sudo: required
+
+services:
+  - docker
+
+install: make builddocker
+
+script: make rundocker
+
+before_deploy:
+  - make mv_fetch
+  - make mv_web
+  - make killdocker
+
+notifications:
+    slack: stoicahome:K6Stjkp5XBrpmxeYaSvFI6SX
+
+
+
+
+
