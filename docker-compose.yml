@@ -5,17 +5,23 @@ services:
     build: ./datafetch/
     depends_on:
       - db
+    labels:
+      - io.rancher.container.network: true
   web:
     build: ./web/
     ports:
       - "3000:3000"
     depends_on:
       - db
+    labels:
+      - io.rancher.container.network: true
   db:
     image: postgres
     environment:
       - POSTGRES_DB=wow_development
     volumes:
       - data:/var/lib/postgresql
+    labels:
+      - io.rancher.container.network: true
 volumes:
   data: {}
