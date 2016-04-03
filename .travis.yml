@@ -1,21 +1,33 @@
 sudo: required
 
+git:
+  depth: 3
+
 services:
   - docker
+
+language: generic
+
+env:
+  global:
+    - CACERT=lol
+
+before_install: make create_ca
 
 install: make builddocker
 
 script: make rundocker
 
-before_deploy:
-  - make mv_fetch
-  - make mv_web
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: make deploy deploy_web
+  on:
+    branch: travis-test
+
+after_deploy:
   - make killdocker
 
 notifications:
-    slack: stoicahome:K6Stjkp5XBrpmxeYaSvFI6SX
-
-
-
-
-
+  slack: stoicahome:K6Stjkp5XBrpmxeYaSvFI6SX
+  email: false
