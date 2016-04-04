@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	//"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"gopkg.in/redis.v3"
 )
 
@@ -16,4 +16,6 @@ func main() {
 
 	pong, err := client.Ping().Result()
 	fmt.Println(pong, err)
+	router := gin.Default()
+	router.Run(":3005")
 }
