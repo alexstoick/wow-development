@@ -21,9 +21,7 @@ script: make rundocker
 deploy:
   skip_cleanup: true
   provider: script
-  script: make deploy deploy_web
-  on:
-    branch: travis-test
+  script: make deploy
 
 after_deploy:
   - make killdocker
