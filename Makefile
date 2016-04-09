@@ -1,11 +1,5 @@
 all: builddocker rundocker mv_fetch mv_web killdocker
 
-create_ca:
-	sudo mkdir -p /etc/docker/certs.d/wow.stoica.xyz:5000
-	sudo mv ca.crt /etc/docker/certs.d/wow.stoica.xyz:5000/ca.crt
-	sudo cat /etc/docker/certs.d/wow.stoica.xyz:5000/ca.crt
-	sudo service docker restart
-
 builddocker:
 	docker build -t wow_build:latest .
 
@@ -19,16 +13,16 @@ mv_fetch:
 build_fetch:
 	cd datafetch && docker build -t wow_datafetch:latest .
 tag_and_push_fetch:
-	docker tag wow_datafetch wow.stoica.xyz:5000/wow_datafetch
-	docker push wow.stoica.xyz:5000/wow_datafetch
+	docker tag wow_datafetch registry.management.stoica.xyz/wow_datafetch
+	docker push registry.management.stoica.xyz/wow_datafetch
 
 mv_web:
 	docker cp wow_build:/go/src/github.com/alexstoick/wow/web/web web/web
 build_web:
 	cd web && docker build -t wow_web:latest .
 tag_and_push_web:
-	docker tag wow_web wow.stoica.xyz:5000/wow_web
-	docker push wow.stoica.xyz:5000/wow_web
+	docker tag wow_web registry.management.stoica.xyz/wow_web
+	docker push registry.management.stoica.xyz/wow_web
 
 killdocker:
 	docker stop wow_build

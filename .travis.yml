@@ -8,12 +8,6 @@ services:
 
 language: generic
 
-env:
-  global:
-    - CACERT=lol
-
-before_install: make create_ca
-
 install: make builddocker
 
 script: make rundocker
