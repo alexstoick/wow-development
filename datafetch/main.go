@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/alexstoick/wow/database"
@@ -123,7 +124,9 @@ func PullData() {
 		fmt.Println("processing auctions")
 		InvalidateExistingAuctions()
 		ProcessAuctions(ah_file)
+		SendNotification("Datafetch ran - new files")
 	}
+	SendNotification("Datafetch ran - no new files")
 	fmt.Println("no new ah file")
 	running = false
 }
@@ -136,7 +139,19 @@ func InvalidateExistingAuctions() {
 	)
 }
 
+func SendNotification(text string) {
+	url := "http://bot.management.stoica.xyz/unsafe_endpoint"
+	body := map[string]string{"text": text}
+	bytesarr, _ := json.Marshal(body)
+	fmt.Println(string(bytesarr))
+
+	client := &http.Client{}
+	client.Post(url, "application/json", bytes.NewBuffer(bytesarr))
+
+}
+
 func main() {
+	SendNotification("Datafetch starting...")
 	fmt.Println("starting datafetch")
 	db := database.ConnectToDb()
 	database.AutoMigrateModels(db)
@@ -150,5 +165,6 @@ func main() {
 	})
 	c.Start()
 	select {}
+	SendNotification("Datafetch ending...")
 	fmt.Println("ending datafetch")
 }

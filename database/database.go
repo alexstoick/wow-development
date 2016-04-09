@@ -30,7 +30,7 @@ func ConnectToDb() gorm.DB {
 		DB_PASSWORD = ""
 		DB_NAME     = "wow_development"
 	)
-	dbinfo := fmt.Sprintf("host=wow_db_1 user=postgres dbname=%s sslmode=disable", DB_NAME)
+	dbinfo := fmt.Sprintf("host=database user=postgres dbname=%s sslmode=disable", DB_NAME)
 	//dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DB_NAME)
 
 	db, err := gorm.Open("postgres", dbinfo)
