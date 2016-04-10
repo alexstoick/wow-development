@@ -3,7 +3,8 @@ package main
 import (
 	//"fmt"
 	"github.com/alexstoick/wow/database"
-	"github.com/alexstoick/wow/web/controllers"
+	controllers_v1 "github.com/alexstoick/wow/web/controllers/v1"
+	controllers_v2 "github.com/alexstoick/wow/web/controllers/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
@@ -50,12 +51,20 @@ func main() {
 
 	v1 := router.Group("v1/")
 	{
-		v1.GET("/items/:id", controllers.GetItem)
-		v1.GET("/items/:id/crafts", controllers.GetItemCrafts)
-		v1.GET("/items/:id/auctions", controllers.GetItemAuctions)
-		v1.GET("/items/:id/price", controllers.GetLatestPrice)
-		v1.GET("/items/:id/history_price", controllers.GetAveragePricesByDay)
-		v1.GET("/last_update", controllers.LastUpdate)
+		v1.GET("/items/:id", controllers_v1.GetItem)
+		v1.GET("/items/:id/crafts", controllers_v1.GetItemCrafts)
+		v1.GET("/items/:id/auctions", controllers_v1.GetItemAuctions)
+		v1.GET("/items/:id/price", controllers_v1.GetLatestPrice)
+		v1.GET("/items/:id/history_price", controllers_v1.GetAveragePricesByDay)
+		v1.GET("/last_update", controllers_v1.LastUpdate)
+	}
+
+	v2 := router.Group("v2/")
+	{
+		v2.GET("/items/:id", controllers_v2.GetItem)
+		//v1.GET("/items/:id/price", controllers_v2.GetLatestPrice)
+		//v1.GET("/items/:id/history_price", controllers_v2.GetAveragePricesByDay)
+		v2.GET("/last_update", controllers_v2.LastUpdate)
 	}
 
 	port := ":3000"
