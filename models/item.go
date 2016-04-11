@@ -139,15 +139,13 @@ func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 	}
 
 	buyPrice, updated_at := item.ComputeLatestBuyprice()
+	item.Auctions = []Auction{}
 
 	summary := ItemSummary{item, buyPrice, updated_at, crafts}
 	return summary
 }
 
 func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
-
-	item.LoadAuctions()
-
 	if len(item.Auctions) > 0 {
 		updated_at = item.Auctions[0].ImportedAt
 		buy_price = item.Auctions[0].Buyout / item.Auctions[0].Quantity
@@ -157,17 +155,16 @@ func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
 	}
 
 	return buy_price, updated_at
-
 }
 
-func (item Item) Load(id string, db gorm.DB) (err error) {
-	err = db.Find(&item, id).Error
+func (item *Item) Load(id string, db gorm.DB) (err error) {
+	err = db.Debug().Find(&item, id).Error
 	return err
 }
 
-func (item Item) LoadAuctions(limit int, db gorm.DB) (err error) {
-	err = db.Preload("Auctions", func(db *gorm.DB) *gorm.DB {
-		return db.Where("present = ?", true).Where("buyout > 0").Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC")
+func (item *Item) LoadAuctions(limit int, db gorm.DB) (err error) {
+	err = db.Debug().Preload("Auctions", func(db *gorm.DB) *gorm.DB {
+		return db.Where("present = ?", true).Where("buyout > 0").Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC").Limit(limit)
 	}).Find(&item).Error
 
 	return err
