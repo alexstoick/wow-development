@@ -44,7 +44,7 @@ type Item struct {
 	SourceDesc     string    `json:"-"`
 	DeprecatedMsg  string    `json:"-"`
 	Spells         []Spell   `json:"-" gorm:"foreignkey:ItemID"`
-	Auctions       []Auction `gorm:"foreignkey:Item_id"`
+	Auctions       []Auction `json:"auctions,omitempty" gorm:"foreignkey:Item_id"`
 }
 
 type PriceSummary struct {
@@ -63,7 +63,7 @@ type ItemSummary struct {
 	Item      Item
 	BuyPrice  int
 	UpdatedAt time.Time
-	Crafts    []CraftSummary
+	Crafts    []CraftSummary `json:"crafts,omitempty"`
 }
 
 type CraftSummary struct {
@@ -146,7 +146,7 @@ func (item Item) CreateSummary(db gorm.DB) ItemSummary {
 
 func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
 
-	//item.LoadAuctions()
+	item.LoadAuctions()
 
 	if len(item.Auctions) > 0 {
 		updated_at = item.Auctions[0].ImportedAt
@@ -158,4 +158,23 @@ func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
 
 	return buy_price, updated_at
 
+}
+
+func (item Item) Load(id string, db gorm.DB) (err error) {
+	err = db.Find(&item, id).Error
+	return err
+}
+
+func (item Item) LoadAuctions(limit int, db gorm.DB) (err error) {
+	err = db.Preload("Auctions", func(db *gorm.DB) *gorm.DB {
+		return db.Where("present = ?", true).Where("buyout > 0").Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC")
+	}).Find(&item).Error
+
+	return err
+}
+
+func (item Item) LoadSpells(limit int, db gorm.DB) (err error) {
+	err = db.Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item).Error
+
+	return err
 }

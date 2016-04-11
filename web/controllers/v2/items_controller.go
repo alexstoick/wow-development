@@ -6,6 +6,9 @@ import (
 )
 
 func GetItem(c *gin.Context) {
+	var item Item
+	db := FetchDatabaseFromContext(c)
+	item.Load(c.Param("id"), db).LoadAuctions(db)
 	item := FetchItemFromContext(c)
 	c.JSON(200, item.CreateSummary(FetchDatabaseFromContext(c)))
 }
