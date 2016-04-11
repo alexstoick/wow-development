@@ -126,7 +126,6 @@ func PullData() {
 		ProcessAuctions(ah_file)
 		SendNotification("Datafetch ran - new files")
 	}
-	SendNotification("Datafetch ran - no new files")
 	fmt.Println("no new ah file")
 	running = false
 }
