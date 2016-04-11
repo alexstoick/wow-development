@@ -158,12 +158,12 @@ func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
 }
 
 func (item *Item) Load(id string, db gorm.DB) (err error) {
-	err = db.Debug().Find(&item, id).Error
+	err = db.Find(&item, id).Error
 	return err
 }
 
 func (item *Item) LoadAuctions(limit int, db gorm.DB) (err error) {
-	err = db.Debug().Preload("Auctions", func(db *gorm.DB) *gorm.DB {
+	err = db.Preload("Auctions", func(db *gorm.DB) *gorm.DB {
 		return db.Where("present = ?", true).Where("buyout > 0").Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC").Limit(limit)
 	}).Find(&item).Error
 
