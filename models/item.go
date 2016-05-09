@@ -53,6 +53,12 @@ type PriceSummary struct {
 	Date    time.Time
 }
 
+type HourlySummary struct {
+	Mininum int
+	Count   int
+	Date    time.Time
+}
+
 type ItemSummaryWithoutCrafts struct {
 	Item       Item
 	BuyPrice   int
@@ -157,6 +163,9 @@ func (item Item) ComputeLatestBuyprice() (buy_price int, updated_at time.Time) {
 	return buy_price, updated_at
 }
 
+/*****
+V2
+*****/
 func (item *Item) Load(id string, db gorm.DB) (err error) {
 	err = db.Find(&item, id).Error
 	return err
@@ -164,14 +173,38 @@ func (item *Item) Load(id string, db gorm.DB) (err error) {
 
 func (item *Item) LoadAuctions(limit int, db gorm.DB) (err error) {
 	err = db.Preload("Auctions", func(db *gorm.DB) *gorm.DB {
-		return db.Where("present = ?", true).Where("buyout > 0").Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC").Limit(limit)
+		return db.
+			Where("present = ?", true).Where("buyout > 0").
+			Order("(auctions.buyout/auctions.quantity), auctions.imported_at DESC").
+			Limit(limit)
 	}).Find(&item).Error
 
 	return err
 }
 
+func (item *Item) LoadHourlySummary(limit int, db gorm.DB) (summary []HourlySummary) {
+	rows, _ := db.Debug().Raw("select count(auctions.auction_id), min(buyout/quantity), imported_at::date, extract(hour from imported_at) from auctions where item_id =? group by 3,4 order by 3,4", item.ItemID).Rows()
+	for rows.Next() {
+		var minimum float64
+		var count int
+		var date time.Time
+		var hour int
+		rows.Scan(&count, &minimum, &date, &hour)
+		date = date.Add(time.Duration(int(time.Hour) * hour))
+		fmt.Println(minimum)
+		prcSum := HourlySummary{int(minimum), count, date}
+		summary = append(summary, prcSum)
+	}
+	return summary
+}
+
 func (item Item) LoadSpells(limit int, db gorm.DB) (err error) {
-	err = db.Preload("Spells").Preload("Spells.ItemMaterials").Preload("Spells.ItemMaterials.Material").Find(&item).Error
+	err = db.
+		Preload("Spells").
+		Preload("Spells.ItemMaterials").
+		Preload("Spells.ItemMaterials.Material").
+		Find(&item).
+		Error
 
 	return err
 }

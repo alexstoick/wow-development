@@ -63,7 +63,7 @@ func main() {
 	{
 		v2.GET("/items/:id", controllers_v2.GetItem)
 		//v1.GET("/items/:id/price", controllers_v2.GetLatestPrice)
-		//v1.GET("/items/:id/history_price", controllers_v2.GetAveragePricesByDay)
+		v2.GET("/items/:id/history_price", controllers_v2.GetPricesByDay)
 		v2.GET("/last_update", controllers_v2.LastUpdate)
 	}
 
