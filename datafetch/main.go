@@ -136,6 +136,7 @@ func InvalidateExistingAuctions() {
 		"UPDATE auctions SET present = ?, present_changed = ? WHERE present = ?",
 		false, time.Now(), true,
 	)
+	db.Close()
 }
 
 func SendNotification(text string) {
