@@ -183,7 +183,17 @@ func (item *Item) LoadAuctions(limit int, db gorm.DB) (err error) {
 }
 
 func (item *Item) LoadHourlySummary(limit int, db gorm.DB) (summary []HourlySummary) {
-	rows, _ := db.Debug().Raw("select count(auctions.auction_id), min(buyout/quantity), imported_at::date, extract(hour from imported_at) from auctions where item_id =? group by 3,4 order by 3,4", item.ItemID).Rows()
+	rows, _ := db.
+		Raw("select"+
+		"count(auctions.auction_id),"+
+		"min(buyout/quantity),"+
+		"imported_at::date,"+
+		"extract(hour from imported_at)"+
+		"from auctions"+
+		"where item_id =?"+
+		"group by 3,4 order by 3,4",
+		item.ItemID).Rows()
+
 	for rows.Next() {
 		var minimum float64
 		var count int
@@ -191,10 +201,10 @@ func (item *Item) LoadHourlySummary(limit int, db gorm.DB) (summary []HourlySumm
 		var hour int
 		rows.Scan(&count, &minimum, &date, &hour)
 		date = date.Add(time.Duration(int(time.Hour) * hour))
-		fmt.Println(minimum)
 		prcSum := HourlySummary{int(minimum), count, date}
 		summary = append(summary, prcSum)
 	}
+
 	return summary
 }
 

@@ -25,3 +25,11 @@ func GetItem(c *gin.Context) {
 	item.LoadAuctions(1, db)
 	c.JSON(200, item.CreateSummary(FetchDatabaseFromContext(c)))
 }
+
+func GetItemAuctionsByPlayer(c *gin.Context) {
+	var item models.Item
+
+	db := FetchDatabaseFromContext(c)
+
+	item.Load(c.Param("id"), db)
+}
